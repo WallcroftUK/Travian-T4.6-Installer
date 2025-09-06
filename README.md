@@ -152,10 +152,10 @@ sudo php -S 0.0.0.0:8081
 **System logs** can be checked:
 ```bash
 # Check service status
-systemctl status nginx php-fpm example_ts3.service mysqld
+systemctl status nginx php-fpm xravian_ts3.service mysqld
 
 # Check installation logs
-journalctl -u example_ts3.service -f
+journalctl -u xravian_ts3.service -f
 
 # Check web server logs
 tail -f /var/log/nginx/error.log
@@ -181,6 +181,11 @@ After successful installation:
 
 ## 📞 Support
 
+### Discord Community
+Join our Discord server for support, updates, and community discussions:
+**🔗 [https://discord.gg/ZgmNK2cQjm](https://discord.gg/ZgmNK2cQjm)**
+
+### Troubleshooting
 If you encounter issues:
 
 1. Check the troubleshooting section above
@@ -188,6 +193,83 @@ If you encounter issues:
 3. Check system logs using the commands provided
 4. Ensure all requirements are met
 5. Try manual installation as fallback
+6. Join our Discord for community support
+
+### 📋 Finding and Sending Logs
+
+#### **During Installation**
+- **Real-time logs**: Visible in the web interface during installation
+- **Progress tracking**: Live updates with detailed status messages
+- **Error messages**: Immediate feedback with specific error details
+
+#### **After Installation**
+- **Main log file**: `/var/log/travian_installer/install_{session_id}.log`
+- **Error log file**: `/var/log/travian_installer/error_{session_id}.log`
+- **Debug log file**: `/var/log/travian_installer/debug_{session_id}.log`
+- **Command log file**: `/var/log/travian_installer/command_{session_id}.log`
+- **Installation summary**: `/home/travian/INSTALLATION_SUMMARY.txt`
+
+#### **System Logs**
+- **Nginx logs**: `/var/log/nginx/error.log` and `/var/log/nginx/access.log`
+- **MySQL logs**: `/var/log/mysqld.log` and `/var/log/mysql-slow.log`
+- **PHP-FPM logs**: `/var/log/php-fpm/www-error.log`
+- **System logs**: `/var/log/messages` and `/var/log/secure`
+
+#### **📦 How to Send Logs for Support**
+
+**Method 1: Download Support Package (Recommended)**
+1. Access the installer interface: `http://your-server/installer/`
+2. Click "Download Support Info" button
+3. Get a ZIP file containing all logs and system information
+4. Send the ZIP file to support
+
+**Method 2: Manual Log Collection**
+```bash
+# Create a support package manually
+cd /tmp
+mkdir travian_support_$(date +%Y%m%d_%H%M%S)
+cd travian_support_*
+
+# Copy all relevant logs
+cp /var/log/travian_installer/*.log ./
+cp /home/travian/INSTALLATION_SUMMARY.txt ./
+cp /var/log/nginx/error.log ./nginx_error.log
+cp /var/log/mysqld.log ./mysql.log
+
+# Get system information
+uname -a > system_info.txt
+php -v >> system_info.txt
+nginx -v >> system_info.txt
+mysql --version >> system_info.txt
+
+# Check service status
+systemctl status nginx >> service_status.txt
+systemctl status mysqld >> service_status.txt
+systemctl status php-fpm >> service_status.txt
+
+# Create ZIP
+cd ..
+zip -r travian_support_$(date +%Y%m%d_%H%M%S).zip travian_support_*/
+```
+
+**Method 3: Quick Error Check**
+```bash
+# Check if services are running
+travian --status
+
+# Check recent errors
+tail -f /var/log/travian_installer/error_*.log
+tail -f /var/log/nginx/error.log
+tail -f /var/log/mysqld.log
+```
+
+#### **When Contacting Support**
+Please include:
+1. **Support package ZIP file** (downloaded from installer)
+2. **Server specifications** (OS, RAM, disk space)
+3. **Error description** (what you were trying to do)
+4. **Steps to reproduce** the issue
+5. **Screenshots** of any error messages
 
 ---
 
