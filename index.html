@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travian Server Installer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .installer-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .step.active {
+            background: #007bff;
+            color: white;
+        }
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+        .step-line {
+            width: 50px;
+            height: 2px;
+            background: #e9ecef;
+            margin-top: 19px;
+        }
+        .step-line.completed {
+            background: #28a745;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .progress-container {
+            margin: 2rem 0;
+        }
+        .log-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .log-entry {
+            margin-bottom: 0.5rem;
+        }
+        .log-success { color: #28a745; }
+        .log-error { color: #dc3545; }
+        .log-warning { color: #ffc107; }
+        .log-info { color: #17a2b8; }
+        .btn-installer {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .btn-installer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.3);
+        }
+        .requirement-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .requirement-check i {
+            margin-right: 10px;
+            width: 20px;
+        }
+        .requirement-check.pass i { color: #28a745; }
+        .requirement-check.fail i { color: #dc3545; }
+        .requirement-check.warning i { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="installer-container p-5">
+                    <div class="text-center mb-4">
+                        <h1 class="display-4 text-primary">
+                            <i class="fas fa-gamepad"></i> Travian Server Installer
+                        </h1>
+                        <p class="lead text-muted">Automated installation for your Travian game server</p>
+                    </div>
+
+                    <!-- Step Indicator -->
+                    <div class="step-indicator">
+                        <div class="step active" data-step="1">1</div>
+                        <div class="step-line"></div>
+                        <div class="step" data-step="2">2</div>
+                        <div class="step-line"></div>
+                        <div class="step" data-step="3">3</div>
+                        <div class="step-line"></div>
+                        <div class="step" data-step="4">4</div>
+                        <div class="step-line"></div>
+                        <div class="step" data-step="5">5</div>
+                    </div>
+
+                    <!-- Step 1: System Requirements -->
+                    <div class="form-section active" id="step1">
+                        <h3 class="mb-4">
+                            <i class="fas fa-server text-primary"></i> System Requirements Check
+                        </h3>
+                        <div id="requirements-list">
+                            <div class="requirement-check">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Checking system requirements...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Requirements Tabs -->
+                        <div class="mt-4" id="requirements-tabs" style="display: none;">
+                            <ul class="nav nav-tabs" id="reqTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">
+                                        <i class="fas fa-server"></i> System
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="php-tab" data-bs-toggle="tab" data-bs-target="#php" type="button" role="tab">
+                                        <i class="fab fa-php"></i> PHP Extensions
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services" type="button" role="tab">
+                                        <i class="fas fa-cogs"></i> Services
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="reqTabContent">
+                                <div class="tab-pane fade show active" id="system" role="tabpanel">
+                                    <div id="system-requirements"></div>
+                                </div>
+                                <div class="tab-pane fade" id="php" role="tabpanel">
+                                    <div id="php-requirements"></div>
+                                </div>
+                                <div class="tab-pane fade" id="services" role="tabpanel">
+                                    <div id="services-requirements"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button class="btn btn-installer btn-lg" onclick="checkRequirements()">
+                                <i class="fas fa-check"></i> Check Requirements
+                            </button>
+                            <button class="btn btn-outline-info btn-lg ms-2" onclick="downloadSupportInfo()" id="support-btn" style="display: none;">
+                                <i class="fas fa-download"></i> Download Support Info
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Database Configuration -->
+                    <div class="form-section" id="step2">
+                        <h3 class="mb-4">
+                            <i class="fas fa-database text-primary"></i> Database Configuration
+                        </h3>
+                        <form id="database-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="db_host" class="form-label">Database Host</label>
+                                        <input type="text" class="form-control" id="db_host" value="localhost" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="db_port" class="form-label">Database Port</label>
+                                        <input type="number" class="form-control" id="db_port" value="3306" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="db_root_user" class="form-label">Root Username</label>
+                                        <input type="text" class="form-control" id="db_root_user" value="root" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="db_root_pass" class="form-label">Root Password</label>
+                                        <input type="password" class="form-control" id="db_root_pass" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="db_user" class="form-label">Travian Database User</label>
+                                        <input type="text" class="form-control" id="db_user" value="travian" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="db_pass" class="form-label">Travian Database Password</label>
+                                        <input type="password" class="form-control" id="db_pass" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button type="button" class="btn btn-installer btn-lg" onclick="testDatabaseConnection()">
+                                    <i class="fas fa-plug"></i> Test Connection
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Step 3: Server Configuration -->
+                    <div class="form-section" id="step3">
+                        <h3 class="mb-4">
+                            <i class="fas fa-cog text-primary"></i> Server Configuration
+                        </h3>
+                        <form id="server-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="server_name" class="form-label">Server Name</label>
+                                        <input type="text" class="form-control" id="server_name" value="ts3.example.online" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="admin_email" class="form-label">Admin Email</label>
+                                        <input type="email" class="form-control" id="admin_email" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="default_language" class="form-label">Default Language</label>
+                                        <select class="form-select" id="default_language">
+                                            <option value="en">English</option>
+                                            <option value="de">German</option>
+                                            <option value="fr">French</option>
+                                            <option value="es">Spanish</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="timezone" class="form-label">Timezone</label>
+                                        <select class="form-select" id="timezone">
+                                            <option value="UTC">UTC</option>
+                                            <option value="Europe/London">Europe/London</option>
+                                            <option value="Europe/Berlin">Europe/Berlin</option>
+                                            <option value="America/New_York">America/New_York</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="discord_webhook" class="form-label">Discord Webhook URL (Optional)</label>
+                                <input type="url" class="form-control" id="discord_webhook" placeholder="https://discord.com/api/webhooks/...">
+                            </div>
+                            <div class="text-center mt-4">
+                                <button type="button" class="btn btn-installer btn-lg" onclick="validateServerConfig()">
+                                    <i class="fas fa-check-circle"></i> Validate Configuration
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Step 4: Installation Progress -->
+                    <div class="form-section" id="step4">
+                        <h3 class="mb-4">
+                            <i class="fas fa-download text-primary"></i> Installation Progress
+                        </h3>
+                        <div class="progress-container">
+                            <div class="progress mb-3" style="height: 25px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 0%" id="progress-bar">
+                                    <span id="progress-text">0%</span>
+                                </div>
+                            </div>
+                            <div class="text-center mb-3">
+                                <span id="current-step">Preparing installation...</span>
+                            </div>
+                        </div>
+                        <div class="log-container" id="install-log">
+                            <div class="log-entry log-info">Ready to begin installation...</div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="btn btn-installer btn-lg" onclick="startInstallation()" id="install-btn">
+                                <i class="fas fa-rocket"></i> Start Installation
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Installation Complete -->
+                    <div class="form-section" id="step5">
+                        <h3 class="mb-4">
+                            <i class="fas fa-check-circle text-success"></i> Installation Complete!
+                        </h3>
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-trophy"></i> Congratulations!</h5>
+                            <p>Your Travian server has been successfully installed and configured.</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-globe text-primary"></i> Server Access
+                                        </h6>
+                                        <p class="card-text">
+                                            <strong>URL:</strong> <span id="server-url">https://ts3.example.online</span><br>
+                                            <strong>Status:</strong> <span class="badge bg-success">Online</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-user-shield text-warning"></i> Admin Access
+                                        </h6>
+                                        <p class="card-text">
+                                            <strong>Username:</strong> admin<br>
+                                            <strong>Password:</strong> admin123<br>
+                                            <strong>Login URL:</strong> <a href="#" id="admin-url" target="_blank">Click here</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-folder text-info"></i> File Structure
+                                        </h6>
+                                        <p class="card-text">
+                                            <strong>Travian Root:</strong> /travian/<br>
+                                            <strong>Main Script:</strong> /travian/main_script/<br>
+                                            <strong>Gpack Files:</strong> /travian/gpack/<br>
+                                            <strong>Server Config:</strong> /home/travian/[your-server]/servers/ts3/<br>
+                                            <strong>Logs:</strong> /travian/logs/<br>
+                                            <strong>Backups:</strong> /travian/backups/
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-cogs text-success"></i> Services
+                                        </h6>
+                                        <p class="card-text">
+                                            <strong>Nginx:</strong> <span class="badge bg-success">Running</span><br>
+                                            <strong>MySQL:</strong> <span class="badge bg-success">Running</span><br>
+                                            <strong>PHP-FPM:</strong> <span class="badge bg-success">Running</span><br>
+                                            <strong>Redis:</strong> <span class="badge bg-success">Running</span><br>
+                                            <strong>Travian Service:</strong> <span class="badge bg-success">Running</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="btn btn-success btn-lg" onclick="window.location.href='/'">
+                                <i class="fas fa-external-link-alt"></i> Go to Server
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-outline-secondary" onclick="previousStep()" id="prev-btn" style="display: none;">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button class="btn btn-installer" onclick="nextStep()" id="next-btn" style="display: none;">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="installer.js"></script>
+</body>
+</html>
