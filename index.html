@@ -251,13 +251,13 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="server_name" class="form-label">Server Name</label>
-                                        <input type="text" class="form-control" id="server_name" value="ts3.example.online" required>
+                                        <input type="text" class="form-control" id="server_name" name="server_name" value="ts3.example.online" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="admin_email" class="form-label">Admin Email</label>
-                                        <input type="email" class="form-control" id="admin_email" required>
+                                        <input type="email" class="form-control" id="admin_email" name="admin_email" required>
                                     </div>
                                 </div>
                             </div>
@@ -265,7 +265,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="default_language" class="form-label">Default Language</label>
-                                        <select class="form-select" id="default_language">
+                                        <select class="form-select" id="default_language" name="default_language">
                                             <option value="en">English</option>
                                             <option value="de">German</option>
                                             <option value="fr">French</option>
@@ -276,7 +276,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="timezone" class="form-label">Timezone</label>
-                                        <select class="form-select" id="timezone">
+                                        <select class="form-select" id="timezone" name="timezone">
                                             <option value="UTC">UTC</option>
                                             <option value="Europe/London">Europe/London</option>
                                             <option value="Europe/Berlin">Europe/Berlin</option>
@@ -286,8 +286,8 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="discord_webhook" class="form-label">Discord Webhook URL (Optional)</label>
-                                <input type="url" class="form-control" id="discord_webhook" placeholder="https://discord.com/api/webhooks/...">
+                                <label for="discord_webhook" class="form-label">Discord Webhook URL</label>
+                                <input type="url" class="form-control" id="discord_webhook" name="discord_webhook" placeholder="https://discord.com/api/webhooks/...">
                             </div>
                             <div class="text-center mt-4">
                                 <button type="button" class="btn btn-installer btn-lg" onclick="validateServerConfig()">

@@ -7,6 +7,11 @@ header('Access-Control-Allow-Headers: Content-Type');
 // Get POST data
 $input = json_decode(file_get_contents('php://input'), true);
 
+// Fallback pokud JSON není poslán
+if (!$input) {
+    $input = $_POST;
+}
+
 if (!$input) {
     echo json_encode(['success' => false, 'message' => 'No data received']);
     exit;
